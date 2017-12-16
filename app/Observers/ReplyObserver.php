@@ -9,13 +9,14 @@ use App\Models\Reply;
 
 class ReplyObserver
 {
-    public function creating(Reply $reply)
+    //使用模型监控created事件，当模型数据成功创建时，方法被调用
+    public function created(Reply $reply)
     {
-        //
+        $reply->topic->increment('reply_count', 1);
     }
 
-    public function updating(Reply $reply)
-    {
-        //
-    }
+//    public function creating(Reply $reply)
+//    {
+//        $reply->content = clean($reply->content, 'user_topic_body');
+//    }
 }
