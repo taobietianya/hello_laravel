@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Reply;
+use App\Notifications\TopicReplied;
 
 // creating, created, updating, updated, saving,
 // saved,  deleting, deleted, restoring, restored
@@ -12,7 +13,13 @@ class ReplyObserver
     //使用模型监控created事件，当模型数据成功创建时，方法被调用
     public function created(Reply $reply)
     {
-        $reply->topic->increment('reply_count', 1);
+        $topic = $reply->topic;
+        $topic->increment('reply_count', 1);
+
+        // 如果评论的作者不是话题的作者，才需要通知
+        if ( ! $reply->user->isAuthorOf($topic)) {
+            $topic->user->notify(new TopicReplied($reply));
+        }
     }
 
 //    public function creating(Reply $reply)
